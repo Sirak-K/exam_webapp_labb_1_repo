@@ -1,6 +1,6 @@
-package com.webapp.exam;
+package com.karis;
 
-public class App {
+public class SpringBootApp {
 
     public static void main(String[] args) {
 
