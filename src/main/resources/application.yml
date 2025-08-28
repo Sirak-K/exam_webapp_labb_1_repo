@@ -1,0 +1,6 @@
+server:
+  port: 9123
+
+spring:
+  application:
+    name: weather-app
