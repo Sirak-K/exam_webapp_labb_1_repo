@@ -20,6 +20,11 @@ public class WeatherController {
         return weatherService.getTodayForecast(lon, lat);
     }
 
+    @GetMapping("/weather/yesterday")
+    public WeatherDTO yesterday(@RequestParam double lon, @RequestParam double lat) {
+        return weatherService.getYesterdayForecast(lon, lat);
+    }
+
     @GetMapping("/weather/tomorrow")
     public WeatherDTO tomorrow(@RequestParam double lon, @RequestParam double lat) {
         return weatherService.getTomorrowForecast(lon, lat);

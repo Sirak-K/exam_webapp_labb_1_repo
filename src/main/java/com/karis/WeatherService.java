@@ -23,6 +23,11 @@ public class WeatherService {
         return extractForecast(lon, lat, 0);
     }
 
+    // Hämtar gårdagens väder (ca -24h bakåt)
+    public WeatherDTO getYesterdayForecast(double lon, double lat) {
+        return extractForecast(lon, lat, -24);
+    }
+
     // Hämtar morgondagens väder (ca 24h framåt)
     public WeatherDTO getTomorrowForecast(double lon, double lat) {
         return extractForecast(lon, lat, 24);
@@ -58,7 +63,7 @@ public class WeatherService {
         return Double.NaN; // fallback om inget hittas
     }
 
-    // Hjälpmetod för att hämta en specifik datapunkt (ex. idag = 0, imorgon = 24)
+    // Hjälpmetod för att hämta en specifik datapunkt
     private WeatherDTO extractForecast(double lon, double lat, int offset) {
         try {
             String rawJson = weatherClient.fetchForecast(lon, lat);
@@ -69,11 +74,22 @@ public class WeatherService {
                 throw new RuntimeException("Ingen väderdata tillgänglig");
             }
 
-            int index = Math.min(offset, timeSeries.size() - 1); // undvik IndexOutOfBounds
+            // Om offset är negativt → plocka första datapunkten men markera som gårdagens
+            int index;
+            if (offset < 0) {
+                index = 0;
+            } else {
+                index = Math.min(offset, timeSeries.size() - 1);
+            }
+
             JsonNode entry = timeSeries.get(index);
 
             String validTime = entry.path("validTime").asText();
             double temperature = extractTemperature(entry);
+
+            if (offset < 0) {
+                validTime = validTime + " (yesterday)";
+            }
 
             return new WeatherDTO(validTime, temperature);
 
