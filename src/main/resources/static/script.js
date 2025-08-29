@@ -3,15 +3,13 @@
 // Funktion för att hämta väderdata
 async function fetchWeather(endpoint) {
   try {
-    // Koordinater (exempel: Stockholm). Dessa kan göras dynamiska senare.
     const lon = 18.063240;
     const lat = 59.334591;
-
-    // Visa loading-text/spinner innan fetch
     const article = document.querySelector("main section article");
-    article.innerHTML = "<p>Laddar väderdata...</p>";
 
-    // Anropa backend
+    // Visa spinner innan fetch
+    article.innerHTML = '<div class="spinner"></div>';
+
     const response = await fetch(`/weather/${endpoint}?lon=${lon}&lat=${lat}`);
     if (!response.ok) {
       throw new Error("Fel vid hämtning av väderdata");
