@@ -21,8 +21,9 @@ public class WeatherController {
     }
 
     @GetMapping("/weather/yesterday")
-    public WeatherDTO yesterday(@RequestParam double lon, @RequestParam double lat) {
-        return weatherService.getYesterdayForecast(lon, lat);
+    public WeatherDTO yesterday() {
+        // Ignorerar lon/lat → hårdkodad station (Stockholm)
+        return weatherService.getYesterdayObservation();
     }
 
     @GetMapping("/weather/tomorrow")

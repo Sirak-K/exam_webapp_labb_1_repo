@@ -1,68 +1,76 @@
 // script.js
 
+// Hjälpfunktion för att rendera väderdata
+function renderWeather(data, endpoint) {
+  const article = document.querySelector("main section article");
+  const aside = document.querySelector("main section aside");
+
+  // Hämta ren tid utan label
+  const cleanValidTime = data.validTime.split(" (")[0];
+  const label = data.validTime.includes("(") ? data.validTime.split(" (")[1].replace(")", "") : "";
+
+  const dateObj = new Date(cleanValidTime);
+  if (isNaN(dateObj.getTime())) {
+    article.innerHTML = `<p><strong>Temperatur:</strong> ${data.temperature} °C</p>`;
+    aside.innerHTML = `<p><strong>Datum/Tid:</strong> (ogiltigt datum)</p>`;
+    return;
+  }
+
+  const dateStr = dateObj.toLocaleDateString("sv-SE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  });
+  const timeStr = dateObj.toLocaleTimeString("sv-SE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+
+  article.innerHTML = `<p><strong>Temperatur:</strong> ${data.temperature} °C</p>`;
+  aside.innerHTML = `
+    <p><strong>Datum:</strong> ${dateStr}</p>
+    <p><strong>Tid:</strong> ${timeStr}</p>
+    ${endpoint === "yesterday" && label ? `<p style="font-size:0.9em;color:#666;">(${label})</p>` : ""}
+  `;
+}
+
+
+// Hjälpfunktion för fel
+function showError(error) {
+  const article = document.querySelector("main section article");
+  const aside = document.querySelector("main section aside");
+  article.innerHTML = `<p style="color:red;">Kunde inte ladda data: ${error.message}</p>`;
+  aside.innerHTML = "";
+}
+
 // Funktion för att hämta väderdata
 async function fetchWeather(endpoint) {
+  const article = document.querySelector("main section article");
+  const aside = document.querySelector("main section aside");
+
+  // Visa spinner
+  article.innerHTML = '<div class="spinner"></div>';
+  aside.innerHTML = "";
+
   try {
-    const lon = 18.063240;  // Stockholm koordinater (kan ändras)
-    const lat = 59.334591;
+    let url = `/weather/${endpoint}`;
 
-    const article = document.querySelector("main section article");
-    const aside = document.querySelector("main section aside");
-
-    // Visa spinner innan fetch
-    article.innerHTML = '<div class="spinner"></div>';
-    aside.innerHTML = "";
-
-    // Hämta data från backend
-    const response = await fetch(`/weather/${endpoint}?lon=${lon}&lat=${lat}`);
-    if (!response.ok) {
-      throw new Error("Fel vid hämtning av väderdata");
+    // Bara idag och imorgon kräver lon/lat
+    if (endpoint === "today" || endpoint === "tomorrow") {
+      const lon = 18.063240;
+      const lat = 59.334591;
+      url += `?lon=${lon}&lat=${lat}`;
     }
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Fel vid hämtning av väderdata");
 
     const data = await response.json();
-
-    // Validera datumsträngen
-    const cleanValidTime = data.validTime.trim();
-    let dateObj = new Date(cleanValidTime);
-
-    // Fallback om datumet är ogiltigt
-    if (isNaN(dateObj.getTime())) {
-      aside.innerHTML = `
-        <p><strong>Datum:</strong> Ogiltigt datum</p>
-        <p><strong>Tid:</strong> Ogiltig tid</p>
-      `;
-      article.innerHTML = `<p><strong>Temperatur:</strong> ${data.temperature} °C</p>`;
-      return;
-    }
-
-    const dateStr = dateObj.toLocaleDateString("sv-SE", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    });
-    const timeStr = dateObj.toLocaleTimeString("sv-SE", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
-
-    // Visa temperatur i article
-    article.innerHTML = `
-      <p><strong>Temperatur:</strong> ${data.temperature} °C</p>
-    `;
-
-    // Visa datum & tid i aside
-    aside.innerHTML = `
-      <p><strong>Datum:</strong> ${dateStr}</p>
-      <p><strong>Tid:</strong> ${timeStr}</p>
-    `;
+    renderWeather(data, endpoint);
 
   } catch (error) {
-    const article = document.querySelector("main section article");
-    const aside = document.querySelector("main section aside");
-
-    article.innerHTML = `<p style="color:red;">Kunde inte ladda data: ${error.message}</p>`;
-    aside.innerHTML = "";
+    showError(error);
   }
 }
 

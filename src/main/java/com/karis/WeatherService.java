@@ -16,28 +16,94 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class WeatherService {
 
     private final WeatherClient weatherClient;
+    private final ObservationClient observationClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public WeatherService(WeatherClient weatherClient) {
+    public WeatherService(WeatherClient weatherClient, ObservationClient observationClient) {
         this.weatherClient = weatherClient;
+        this.observationClient = observationClient;
     }
 
-    // Hämtar dagens väder (≈ nu)
+    // Hämtar dagens väder (forecast ≈ nu)
     public WeatherDTO getTodayForecast(double lon, double lat) {
         return extractForecast(lon, lat, 0);
     }
 
-    // Hämtar gårdagens väder (≈ igår kl 12:00)
-    public WeatherDTO getYesterdayForecast(double lon, double lat) {
-        return extractYesterdayForecast(lon, lat);
-    }
-
-    // Hämtar morgondagens väder (~24h framåt i tiden)
+    // Hämtar morgondagens väder (forecast ≈ nu+24h)
     public WeatherDTO getTomorrowForecast(double lon, double lat) {
         return extractClosestForecast(lon, lat, 24);
     }
 
-    // Hämtar flera datapunkter (ex. 5 kommande timmar)
+    // Hämtar gårdagens väder (observation igår eller fallback förrgår)
+    // Hämtar gårdagens väder (fallback till förrgår, annars senaste tillgängliga)
+    public WeatherDTO getYesterdayObservation() {
+        try {
+            String rawJson = observationClient.fetchObservations();
+            JsonNode root = objectMapper.readTree(rawJson);
+            JsonNode data = root.path("value");
+
+            if (data.isMissingNode() || !data.isArray()) {
+                throw new RuntimeException("Ingen observationsdata tillgänglig");
+            }
+
+            // 1. Försök igår
+            LocalDate yesterday = LocalDate.now(ZoneOffset.UTC).minusDays(1);
+            WeatherDTO yesterdayData = findClosestObservation(data, yesterday, "Observation igår");
+            if (yesterdayData != null) {
+                return yesterdayData;
+            }
+
+            // 2. Försök förrgår
+            LocalDate dayBeforeYesterday = LocalDate.now(ZoneOffset.UTC).minusDays(2);
+            WeatherDTO fallbackData = findClosestObservation(data, dayBeforeYesterday, "Observation förrgår");
+            if (fallbackData != null) {
+                return fallbackData;
+            }
+
+            // 3. Annars ta senaste tillgängliga
+            JsonNode lastEntry = data.get(data.size() - 1);
+            long ms = lastEntry.path("date").asLong();
+            LocalDateTime obsTime = LocalDateTime.ofEpochSecond(ms / 1000, 0, ZoneOffset.UTC);
+            double temperature = lastEntry.path("value").asDouble();
+            return new WeatherDTO(obsTime.toString() + " (Senaste observation)", temperature);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Kunde inte hämta gårdagens observationer: " + e.getMessage(), e);
+        }
+    }
+
+    // Hjälpmetod för observationer
+    private WeatherDTO findClosestObservation(JsonNode data, LocalDate targetDate, String label) {
+        JsonNode bestEntry = null;
+        long bestDiff = Long.MAX_VALUE;
+
+        for (JsonNode entry : data) {
+            if (entry.path("value").isMissingNode() || entry.path("value").isNull()) {
+                continue;
+            }
+            long ms = entry.path("date").asLong();
+            LocalDateTime obsTime = LocalDateTime.ofEpochSecond(ms / 1000, 0, ZoneOffset.UTC);
+
+            long diff = Math.abs(Duration.between(obsTime.toLocalDate().atStartOfDay(), targetDate.atStartOfDay()).toHours());
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                bestEntry = entry;
+            }
+        }
+
+        if (bestEntry == null) {
+            return null;
+        }
+
+        long ms = bestEntry.path("date").asLong();
+        LocalDateTime obsTime = LocalDateTime.ofEpochSecond(ms / 1000, 0, ZoneOffset.UTC);
+        double temperature = bestEntry.path("value").asDouble();
+
+        // Lägg till label (igår/förrgår)
+        return new WeatherDTO(obsTime.toString() + " (" + label + ")", temperature);
+    }
+
+    // Hämtar flera datapunkter (forecast ex. 5 timmar framåt)
     public List<WeatherDTO> getForecast(double lon, double lat) {
         try {
             String rawJson = weatherClient.fetchForecast(lon, lat);
@@ -57,7 +123,7 @@ public class WeatherService {
         }
     }
 
-    // Hjälpmetod för att plocka ut temperaturen
+    // Hjälpmetod för temperatur från forecast-API
     private double extractTemperature(JsonNode entry) {
         for (JsonNode param : entry.path("parameters")) {
             if ("t".equals(param.path("name").asText())) {
@@ -67,7 +133,7 @@ public class WeatherService {
         return Double.NaN;
     }
 
-    // Hämtar en specifik datapunkt med index
+    // Forecast datapunkt via index
     private WeatherDTO extractForecast(double lon, double lat, int index) {
         try {
             String rawJson = weatherClient.fetchForecast(lon, lat);
@@ -91,7 +157,7 @@ public class WeatherService {
         }
     }
 
-    // Hämta närmaste datapunkt kring nu ± offset timmar
+    // Forecast datapunkt ≈ nu ± offset timmar
     private WeatherDTO extractClosestForecast(double lon, double lat, int hourOffset) {
         try {
             String rawJson = weatherClient.fetchForecast(lon, lat);
@@ -127,45 +193,6 @@ public class WeatherService {
 
         } catch (Exception e) {
             throw new RuntimeException("Kunde inte hämta väderdata", e);
-        }
-    }
-
-    // Hämtar gårdagens väder ≈ igår kl 12:00
-    private WeatherDTO extractYesterdayForecast(double lon, double lat) {
-        try {
-            String rawJson = weatherClient.fetchForecast(lon, lat);
-            JsonNode root = objectMapper.readTree(rawJson);
-            JsonNode timeSeries = root.path("timeSeries");
-
-            if (timeSeries.isMissingNode() || timeSeries.size() == 0) {
-                throw new RuntimeException("Ingen väderdata tillgänglig");
-            }
-
-            LocalDateTime targetTime = LocalDate.now(ZoneOffset.UTC).minusDays(1).atTime(12, 0);
-
-            JsonNode bestEntry = null;
-            long bestDiff = Long.MAX_VALUE;
-
-            for (JsonNode entry : timeSeries) {
-                LocalDateTime vt = LocalDateTime.parse(entry.path("validTime").asText().replace("Z", ""));
-                long diff = Math.abs(Duration.between(targetTime, vt).toHours());
-                if (diff < bestDiff) {
-                    bestDiff = diff;
-                    bestEntry = entry;
-                }
-            }
-
-            if (bestEntry == null) {
-                throw new RuntimeException("Ingen matchande datapunkt hittades för gårdagen");
-            }
-
-            String validTime = bestEntry.path("validTime").asText();
-            double temperature = extractTemperature(bestEntry);
-
-            return new WeatherDTO(validTime, temperature);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Kunde inte hämta gårdagens väder", e);
         }
     }
 }
