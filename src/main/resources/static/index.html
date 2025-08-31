@@ -4,34 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dagens väder</title>
+  <meta name="description" content="En väderapp som visar dagens, gårdagens och morgondagens väder. Byggd med HTML, CSS, JS och Spring Boot backend.">
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 <body>
   <!-- Sidhuvud -->
-  <header>
+  <header class="site-header">
     <h1>Dagens Väder</h1>
-    <nav>
+    <nav class="site-nav">
       <ul>
-        <li><a href="index.html">Idag</a></li>
         <li><a href="weather_yesterday.html">Igår</a></li>
+        <li><a href="index.html">Idag</a></li>
         <li><a href="weather_tomorrow.html">Imorgon</a></li>
       </ul>
     </nav>
   </header>
 
   <!-- Huvudinnehåll -->
-  <main>
-    <section>
-      <article>
+  <main id="content">
+    <section class="weather-section">
+      <article class="weather-article">
         <h2>Dagens väder</h2>
-        <!-- Här ska väderdatan från backend skrivas ut via script.js -->
+        <!-- Temperaturen skrivs ut här via script.js -->
       </article>
+      <aside class="weather-aside">
+        <h3>Datum & Tid</h3>
+        <!-- ValidTime skrivs ut här via script.js -->
+      </aside>
     </section>
   </main>
 
   <!-- Sidfot -->
-  <footer>
+  <footer class="site-footer">
     <p>&copy; 2025 Väderappen</p>
   </footer>
 </body>

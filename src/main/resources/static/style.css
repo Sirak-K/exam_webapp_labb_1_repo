@@ -1,76 +1,104 @@
-/* ====== Grundinställningar ====== */
-
-/* Reset & basinställningar */
+/* Reset och bas */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Body styling */
+/* Kropp och helsideslayout */
+html, body {
+  height: 100%;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #e6f2ff; /* ljusblå bakgrund */
-  color: #333;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center; /* centrera horisontellt */
+  font-family: Arial, sans-serif;
+  background-color: #e6f2ff;
+  color: #333;
 }
 
-/* Centrera huvudinnehåll */
-main {
-  flex: 1; /* tar upp all plats mellan header och footer */
-  width: 100%;
-  max-width: 800px;
-  padding: 20px;
-}
-
-/* Header och footer */
-header, footer {
-  width: 100%;
+/* Header */
+.site-header {
   background-color: #3498db;
-  color: white;
+  color: #fff;
+  padding: 1rem;
   text-align: center;
-  padding: 15px 0;
 }
 
-/* Navigationsmeny */
-nav ul {
-  list-style-type: none;
+.site-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.site-nav ul {
+  list-style: none;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 1rem;
 }
 
-nav a {
+.site-nav a {
+  color: #fff;
   text-decoration: none;
-  color: white;
   font-weight: bold;
 }
 
-nav a:hover {
+.site-nav a:hover {
   text-decoration: underline;
 }
 
-/* Article styling */
-article {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+/* Main – fyller ut resterande höjd */
+main#content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
 }
 
-/* ====== Loading spinner (från tidigare steg) ====== */
+/* Weather-sektionen delas i två kolumner */
+.weather-section {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Artikel (temperatur) */
+.weather-article {
+  max-width: 300px;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+/* Aside (datum & tid) */
+.weather-aside {
+  max-width: 200px;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Footer – alltid längst ned */
+.site-footer {
+  background-color: #3498db;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Spinner */
 .spinner {
-  border: 6px solid #f3f3f3;       /* ljusgrå bakgrund */
-  border-top: 6px solid #3498db;   /* blå framkant */
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
   border-radius: 50%;
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
-  margin: 20px auto;               /* centrera */
+  margin: 20px auto;
 }
 
 @keyframes spin {
