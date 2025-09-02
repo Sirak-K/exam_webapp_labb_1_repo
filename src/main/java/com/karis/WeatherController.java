@@ -1,7 +1,5 @@
 package com.karis;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,24 +13,18 @@ public class WeatherController {
         this.weatherService = weatherService;
     }
 
-    @GetMapping("/weather/today")
+    @GetMapping("/api/weather/today")
     public WeatherDTO today(@RequestParam double lon, @RequestParam double lat) {
         return weatherService.getTodayForecast(lon, lat);
     }
 
-    @GetMapping("/weather/yesterday")
+    @GetMapping("/api/weather/yesterday")
     public WeatherDTO yesterday() {
-        // Ignorerar lon/lat → hårdkodad station (Stockholm)
         return weatherService.getYesterdayObservation();
     }
 
-    @GetMapping("/weather/tomorrow")
+    @GetMapping("/api/weather/tomorrow")
     public WeatherDTO tomorrow(@RequestParam double lon, @RequestParam double lat) {
         return weatherService.getTomorrowForecast(lon, lat);
-    }
-
-    @GetMapping("/weather/forecast")
-    public List<WeatherDTO> forecast(@RequestParam double lon, @RequestParam double lat) {
-        return weatherService.getForecast(lon, lat);
     }
 }

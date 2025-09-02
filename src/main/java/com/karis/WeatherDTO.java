@@ -1,20 +1,11 @@
 package com.karis;
 
-public class WeatherDTO {
+/**
+ * WeatherDTO - Data Transfer Object för väderinformation.
+ *
+ * Används för att skicka validerad data mellan backend och frontend. Record ger
+ * immutabla fält, automatiska getters, equals, hashCode och toString.
+ */
+public record WeatherDTO(String validTime, double temperature) {
 
-    private String validTime;
-    private double temperature;
-
-    public WeatherDTO(String validTime, double temperature) {
-        this.validTime = validTime;
-        this.temperature = temperature;
-    }
-
-    public String getValidTime() {
-        return validTime;
-    }
-
-    public double getTemperature() {
-        return temperature;
-    }
 }

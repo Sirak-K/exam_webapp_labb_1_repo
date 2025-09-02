@@ -53,10 +53,11 @@ async function fetchWeather(endpoint) {
   aside.innerHTML = "";
 
   try {
-    let url = `/weather/${endpoint}`;
+    // Uppdaterad till nya RESTful endpoints
+    let url = `/api/weather/${endpoint}`;
 
     // Bara idag och imorgon kräver lon/lat
-    if (endpoint === "today" || endpoint === "tomorrow") {
+    if (endpoint === "today" || endpoint === "tomorrow" || endpoint === "forecast") {
       const lon = 18.063240;
       const lat = 59.334591;
       url += `?lon=${lon}&lat=${lat}`;
