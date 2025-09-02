@@ -24,10 +24,16 @@ body {
   color: #fff;
   padding: 1rem;
   text-align: center;
+  align-items: center;
 }
 
 .site-header h1 {
   margin-bottom: 0.5rem;
+}
+
+.site-nav {
+  justify-content: center;
+  align-items: center;
 }
 
 .site-nav ul {
@@ -154,3 +160,82 @@ main#content {
 
 
 
+/* === Hamburger meny === */
+.menu-toggle-container{
+  display: flex;
+  justify-content: center;
+}
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  
+  width: 24px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.menu-toggle .bar {
+  height: 3px;
+  width: 100%;
+  background-color: white;
+  border-radius: 2px;
+  transition: 0.3s;
+}
+
+/* När meny är öppen → gör till kryss */
+.menu-toggle.open .bar:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.menu-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.menu-toggle.open .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Standardnav syns bara på breda skärmar */
+.site-nav {
+  display: flex;
+}
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Mobilvy → visa hamburger, göm nav tills klick */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;  /* visa hamburgaren i mobilvy */
+  }
+
+  .site-nav {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background-color: #3498db;
+    padding: 1rem;
+    border-radius: 0 0 0 12px;
+    flex-direction: column;
+  }
+
+  .site-nav.open {
+    display: flex;   /* gör att nav syns när toggle är aktiv */
+  }
+
+  .site-nav ul {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .site-nav a {
+    color: white;
+    font-size: 1.2rem;
+  }
+}

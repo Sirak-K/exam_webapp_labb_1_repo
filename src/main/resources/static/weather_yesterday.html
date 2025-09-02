@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gårdagens väder</title>
-  <meta name="description" content="Väderappen visar gårdagens väder baserat på SMHI:s prognoser.">
+  <meta name="description" content="Väderappen visar gårdagens väder baserat på SMHI:s observationer.">
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
@@ -12,6 +12,16 @@
   <!-- Sidhuvud -->
   <header class="site-header">
     <h1>Gårdagens Väder</h1>
+
+    <!-- Hamburger ikon -->
+     <div class="menu-toggle-container">
+    <button class="menu-toggle" aria-label="Meny">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+</div>
+
     <nav class="site-nav">
       <ul>
         <li><a href="weather_yesterday.html">Igår</a></li>

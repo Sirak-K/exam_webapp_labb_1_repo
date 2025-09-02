@@ -35,7 +35,6 @@ function renderWeather(data, endpoint) {
   `;
 }
 
-
 // Hjälpfunktion för fel
 function showError(error) {
   const article = document.querySelector("main section article");
@@ -74,8 +73,30 @@ async function fetchWeather(endpoint) {
   }
 }
 
-// Kör rätt fetch beroende på vilken sida vi är på
+// Initiering
 document.addEventListener("DOMContentLoaded", () => {
+  // === Hamburger meny toggle ===
+  const menuToggle = document.querySelector(".menu-toggle");
+  const siteNav = document.querySelector(".site-nav");
+
+  if (menuToggle && siteNav) {
+    // Toggle öppen/stängd
+    menuToggle.addEventListener("click", () => {
+      menuToggle.classList.toggle("open");
+      siteNav.classList.toggle("open");
+    });
+
+    // Stäng menyn automatiskt när man klickar på en länk
+    const navLinks = document.querySelectorAll(".site-nav a");
+    navLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        menuToggle.classList.remove("open");
+        siteNav.classList.remove("open");
+      });
+    });
+  }
+
+  // === Väderhämtning beroende på sida ===
   const path = window.location.pathname;
 
   if (path.endsWith("index.html") || path === "/") {
