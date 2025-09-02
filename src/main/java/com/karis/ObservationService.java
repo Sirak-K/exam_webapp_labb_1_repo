@@ -20,7 +20,9 @@ public class ObservationService {
         this.observationClient = observationClient;
     }
 
-    // Hämtar gårdagens observation
+    // Hämtar JSON-data via observationClient.fetchObservations().
+    // - Försöker hitta en observation som matchar igår via findClosestObservation()
+    // -- Om ingen hittas så försöker den med dagen innan. Om dessa två scenarion ej lyckas så används den senaste tillgängliga observationen.
     public WeatherDTO getYesterdayObservation() {
         try {
             String rawJson = observationClient.fetchObservations();
@@ -72,6 +74,7 @@ public class ObservationService {
         return bestEntry == null ? null : parseObservationEntry(bestEntry, label);
     }
 
+// Här konverteras en JSON-punkt till WeatherDTO med tid + temp.
     private WeatherDTO parseObservationEntry(JsonNode entry, String label) {
         long ms = entry.path("date").asLong();
         LocalDateTime obsTime = LocalDateTime.ofEpochSecond(ms / 1000, 0, ZoneOffset.UTC);

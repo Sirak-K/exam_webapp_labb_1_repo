@@ -1,0 +1,90 @@
+/* Hamburgermeny */
+.menu-toggle {
+  display: none; /* döljs i desktop */
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.menu-toggle .bar {
+  height: 3px;
+  width: 100%;
+  background-color: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.menu-toggle.open .bar:nth-child(1) {
+  transform: rotate(45deg) translate(4px, 4px);
+}
+.menu-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.menu-toggle.open .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(4px, -4px);
+}
+
+/*  Media Queries  */
+/* 375px */
+@media (max-width: 600px) {
+  .site-nav {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background-color: #0077cc;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .site-nav.open {
+    display: block;
+  }
+
+  .site-nav ul {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .weather-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .weather-article,
+  .weather-aside {
+    width: 100%;
+    max-width: 350px;
+  }
+}
+
+/* 1024 – 1439px */
+@media (min-width: 601px) and (max-width: 1439px) {
+  .weather-section {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .weather-article,
+  .weather-aside {
+    flex: 1;
+  }
+}
+
+/* ≥ 1440px */
+@media (min-width: 1440px) {
+  .weather-section {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}

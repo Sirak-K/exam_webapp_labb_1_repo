@@ -13,16 +13,19 @@ public class WeatherController {
         this.weatherService = weatherService;
     }
 
-    @GetMapping("/api/weather/today")
-    public WeatherDTO today(@RequestParam double lon, @RequestParam double lat) {
-        return weatherService.getTodayForecast(lon, lat);
-    }
-
+// Väderdata: Observation
     @GetMapping("/api/weather/yesterday")
     public WeatherDTO yesterday() {
         return weatherService.getYesterdayObservation();
     }
 
+// Väderdata: Forecast
+    @GetMapping("/api/weather/today")
+    public WeatherDTO today(@RequestParam double lon, @RequestParam double lat) {
+        return weatherService.getTodayForecast(lon, lat);
+    }
+
+// Väderdata: Forecast
     @GetMapping("/api/weather/tomorrow")
     public WeatherDTO tomorrow(@RequestParam double lon, @RequestParam double lat) {
         return weatherService.getTomorrowForecast(lon, lat);

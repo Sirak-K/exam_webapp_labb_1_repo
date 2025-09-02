@@ -19,17 +19,19 @@ public class ForecastService {
         this.weatherClient = weatherClient;
     }
 
-    // Hämtar forecast ≈ nu
+    // HÄMTA PROGNOS för Dagens
     public WeatherDTO getTodayForecast(double lon, double lat) {
         return extractForecast(lon, lat, 0);
     }
 
-    // Hämtar forecast ≈ nu+24h
+    // HÄMTA PROGNOS för Morgondagen
     public WeatherDTO getTomorrowForecast(double lon, double lat) {
         return extractClosestForecast(lon, lat, 24);
     }
 
-    // Hjälpmetod: forecast datapunkt via index
+    // Hjälpmetod för Forecast-datapunkt
+    // 1. Hämtar en specifik prognospunkt från SMHI:s timeSeries-lista, baserat på ett givet index.
+    // 2. Använder extractTemperature(entry) för att hämta temperaturen (t) från JSON-datan.
     private WeatherDTO extractForecast(double lon, double lat, int index) {
         try {
             String rawJson = weatherClient.fetchForecast(lon, lat);
@@ -53,7 +55,9 @@ public class ForecastService {
         }
     }
 
-    // Hjälpmetod: forecast datapunkt ≈ nu ± offset timmar
+    // Hjälpmetod: Forecast-datapunkt ≈ nu ± offset timmar
+    // 1. Hämtar den prognospunkt i timeSeries som ligger närmast en viss tidpunkt (nu + hourOffset).
+    // 2. Även här används extractTemperature(entry) för att hämta temperaturen (t) från JSON-datan.
     private WeatherDTO extractClosestForecast(double lon, double lat, int hourOffset) {
         try {
             String rawJson = weatherClient.fetchForecast(lon, lat);
@@ -92,6 +96,8 @@ public class ForecastService {
         }
     }
 
+// En beroendemetod som gör själva temperatur-utläsningen
+// De andra två sköter vilken datapunkt i tidsserien som ska användas
     private double extractTemperature(JsonNode entry) {
         for (JsonNode param : entry.path("parameters")) {
             if ("t".equals(param.path("name").asText())) {

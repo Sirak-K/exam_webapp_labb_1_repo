@@ -1,11 +1,11 @@
 package com.karis;
 
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * BaseClient - en gemensam HTTP-klient för SMHI-API. Använder WebClient
- * (blockerande) för minimal kodändring.
+ * BaseClient - gemensam HTTP-klient för SMHI-API. Använder blockerande för
+ * minimal kodändring.
  */
 @Component
 public abstract class BaseClient {

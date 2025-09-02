@@ -6,6 +6,8 @@
   <title>Morgondagens väder</title>
   <meta name="description" content="Väderappen visar morgondagens väder baserat på SMHI:s prognoser.">
   <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style_responsive.css">
+
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -13,14 +15,12 @@
   <header class="site-header">
     <h1>Morgondagens Väder</h1>
 
-    <!-- Hamburger ikon -->
-     <div class="menu-toggle-container">
+    <!-- Hamburger-meny -->
     <button class="menu-toggle" aria-label="Meny">
       <span class="bar"></span>
       <span class="bar"></span>
       <span class="bar"></span>
     </button>
-</div>
 
     <nav class="site-nav">
       <ul>
@@ -35,12 +35,11 @@
   <main id="content">
     <section class="weather-section">
       <article class="weather-article">
-        <h2>Morgondagens väder</h2>
-        <!-- Temperaturen skrivs ut här via script.js -->
+        <!-- Temp. infogas här via script.js -->
       </article>
       <aside class="weather-aside">
         <h3>Datum & Tid</h3>
-        <!-- ValidTime skrivs ut här via script.js -->
+        <!-- Datum & Tid infogas här via script.js -->
       </aside>
     </section>
   </main>

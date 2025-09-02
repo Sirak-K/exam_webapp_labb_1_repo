@@ -13,7 +13,10 @@ public class WeatherService {
         this.observationService = observationService;
     }
 
-    // Delegation: logiken är oförändrad
+    public WeatherDTO getYesterdayObservation() {
+        return observationService.getYesterdayObservation();
+    }
+
     public WeatherDTO getTodayForecast(double lon, double lat) {
         return forecastService.getTodayForecast(lon, lat);
     }
@@ -22,7 +25,4 @@ public class WeatherService {
         return forecastService.getTomorrowForecast(lon, lat);
     }
 
-    public WeatherDTO getYesterdayObservation() {
-        return observationService.getYesterdayObservation();
-    }
 }
